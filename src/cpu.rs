@@ -22,7 +22,7 @@ pub trait RegisterReadWrite<T: IntLike, R: RegisterLongName> {
 
     #[inline]
     fn read(&self, field: Field<T, R>) -> T {
-        (self.get() & (field.mask << field.shift)) >> field.shift
+        (self.get() & field.mask()) >> field.shift
     }
 
     #[inline]
@@ -45,12 +45,12 @@ pub trait RegisterReadWrite<T: IntLike, R: RegisterLongName> {
     #[inline]
     fn modify(&self, field: FieldValue<T, R>) {
         let reg: T = self.get();
-        self.set((reg & !field.mask) | field.value);
+        self.set((reg & !field.mask()) | field.value);
     }
 
     #[inline]
     fn modify_no_read(&self, original: LocalRegisterCopy<T, R>, field: FieldValue<T, R>) {
-        self.set((original.get() & !field.mask) | field.value);
+        self.set((original.get() & !field.mask()) | field.value);
     }
 
     #[inline]
@@ -60,12 +60,12 @@ pub trait RegisterReadWrite<T: IntLike, R: RegisterLongName> {
 
     #[inline]
     fn matches_any(&self, field: FieldValue<T, R>) -> bool {
-        self.get() & field.mask != T::zero()
+        self.get() & field.mask() != T::zero()
     }
 
     #[inline]
     fn matches_all(&self, field: FieldValue<T, R>) -> bool {
-        self.get() & field.mask == field.value
+        self.get() & field.mask() == field.value
     }
 }
 
@@ -76,7 +76,7 @@ pub trait RegisterReadOnly<T: IntLike, R: RegisterLongName> {
 
     #[inline]
     fn read(&self, field: Field<T, R>) -> T {
-        (self.get() & (field.mask << field.shift)) >> field.shift
+        (self.get() & field.mask()) >> field.shift
     }
 
     #[inline]
@@ -98,12 +98,12 @@ pub trait RegisterReadOnly<T: IntLike, R: RegisterLongName> {
 
     #[inline]
     fn matches_any(&self, field: FieldValue<T, R>) -> bool {
-        self.get() & field.mask != T::zero()
+        self.get() & field.mask() != T::zero()
     }
 
     #[inline]
     fn matches_all(&self, field: FieldValue<T, R>) -> bool {
-        self.get() & field.mask == field.value
+        self.get() & field.mask() == field.value
     }
 }
 
